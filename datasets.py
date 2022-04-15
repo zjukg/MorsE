@@ -149,36 +149,3 @@ class KGEEvalDataset(Dataset):
         tail_label_or_cand = torch.stack([_[1] for _ in data], dim=0)
         head_label_or_cand = torch.stack([_[2] for _ in data], dim=0)
         return pos_triple, tail_label_or_cand, head_label_or_cand
-
-
-class PostTrainDataset(Dataset):
-    def __init__(self, args):
-        self.args = args
-        self.env = lmdb.open(args.db_path, readonly=True, max_dbs=3)
-        self.subgraphs_db = self.env.open_db("test_subgraphs".encode())
-
-    def __len__(self):
-        txn = self.env.begin(db=self.subgraphs_db)
-        num = txn.stat()['entries']
-        return num
-
-    @staticmethod
-    def collate_fn(data):
-        return data
-
-    def __getitem__(self, idx):
-        with self.env.begin(db=self.subgraphs_db) as txn:
-            str_id = '{:08}'.format(idx).encode('ascii')
-            sup_tri, que_tri, sup_hr2t, que_hr2t, sup_rt2h, que_rt2h = deserialize(txn.get(str_id))
-
-        nentity = len(np.unique(np.array(sup_tri)[:, [0, 2]]))
-        train_dataset = KGETrainDataset(self.args, sup_tri, nentity,
-                                        self.args.posttrain_num_neg, sup_hr2t, sup_rt2h)
-        train_dataloader = DataLoader(train_dataset, batch_size=self.args.posttrain_bs,
-                                      collate_fn=KGETrainDataset.collate_fn)
-
-        test_dataset = KGEEvalDataset(self.args, que_tri, nentity, que_hr2t, que_rt2h)
-        test_dataloader = DataLoader(test_dataset, batch_size=len(que_tri),
-                                     collate_fn=KGEEvalDataset.collate_fn)
-
-        return torch.tensor(sup_tri), train_dataloader, test_dataloader

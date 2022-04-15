@@ -4,11 +4,6 @@ import torch.nn.functional as F
 
 
 class Identity(nn.Module):
-    """A placeholder identity operator that is argument-insensitive.
-    (Identity has already been supported by PyTorch 1.2, we will directly
-    import torch.nn.Identity in the future)
-    """
-
     def __init__(self):
         super(Identity, self).__init__()
 
@@ -114,7 +109,7 @@ class RGCN(nn.Module):
     def __init__(self, args):
         super(RGCN, self).__init__()
 
-        self.emb_dim = args.emb_dim * 2 if args.double_entity_embedding else args.emb_dim
+        self.emb_dim = args.ent_dim
         self.num_rel = args.num_rel
         self.num_bases = args.num_bases
         self.num_layers = args.num_layers
@@ -155,7 +150,6 @@ class RGCN(nn.Module):
     def forward(self, g):
         for idx, layer in enumerate(self.layers):
             layer(g)
-        # return g.ndata.pop('h')
 
         g.ndata['h'] = self.jk_linear(g.ndata['repr'])
         return g.ndata['h']

@@ -11,7 +11,6 @@ import torch.nn.functional as F
 from collections import defaultdict as ddict
 from utils import get_indtest_test_dataset_and_train_g
 from datasets import KGEEvalDataset
-import csv
 
 
 class Trainer(object):
@@ -19,7 +18,7 @@ class Trainer(object):
         self.args = args
 
         # writer and logger
-        self.name = f'{args.name}_{args.run_mode}'
+        self.name = args.name
         self.writer = SummaryWriter(os.path.join(args.tb_log_dir, self.name))
         self.logger = Log(args.log_dir, self.name).get_logger()
         self.logger.info(json.dumps(vars(args)))
@@ -31,7 +30,7 @@ class Trainer(object):
 
         indtest_test_dataset, indtest_train_g = get_indtest_test_dataset_and_train_g(args)
         self.indtest_train_g = indtest_train_g.to(args.gpu)
-        self.indtest_test_dataloader = DataLoader(indtest_test_dataset, batch_size=args.eval_bs,
+        self.indtest_test_dataloader = DataLoader(indtest_test_dataset, batch_size=args.indtest_eval_bs,
                                                   shuffle=False, collate_fn=KGEEvalDataset.collate_fn)
 
         # models
@@ -91,13 +90,6 @@ class Trainer(object):
         ent_emb = self.rgcn(sup_g_bidir)
 
         return ent_emb
-
-    def write_rst_csv(self, suffix_dict):
-        for suf, rst in suffix_dict.items():
-            with open(os.path.join(self.args.log_dir, f"{self.args.task_name}_{suf}.csv"), "a") as rstfile:
-                rst_writer = csv.writer(rstfile)
-                rst_writer.writerow([self.name, round(rst["mrr"], 4), round(rst["hits@1"], 4),
-                                     round(rst["hits@5"], 4), round(rst["hits@10"], 4)])
 
     def evaluate(self, ent_emb, eval_dataloader, num_cand='all'):
         results = ddict(float)

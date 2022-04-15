@@ -15,7 +15,7 @@ class MetaTrainer(Trainer):
         train_subgraph_dataset = TrainSubgraphDataset(args)
         valid_subgraph_dataset = ValidSubgraphDataset(args)
         self.train_subgraph_dataloader = DataLoader(train_subgraph_dataset, batch_size=args.metatrain_bs,
-                                                   shuffle=True, collate_fn=TrainSubgraphDataset.collate_fn)
+                                                    shuffle=True, collate_fn=TrainSubgraphDataset.collate_fn)
         self.valid_subgraph_dataloader = DataLoader(valid_subgraph_dataset, batch_size=args.metatrain_bs,
                                                     shuffle=False, collate_fn=ValidSubgraphDataset.collate_fn)
 
@@ -84,7 +84,6 @@ class MetaTrainer(Trainer):
             best_eval_rst['hits@5'], best_eval_rst['hits@10']))
 
         self.before_test_load()
-        self.evaluate_indtest_test_triples()
         self.evaluate_indtest_test_triples(num_cand=50)
 
     def evaluate_valid_subgraphs(self):

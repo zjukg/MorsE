@@ -8,12 +8,12 @@ import logging
 from collections import defaultdict as ddict
 
 
-# about dgl graph
 def get_g(tri_list):
     triples = np.array(tri_list)
     g = dgl.graph((triples[:, 0].T, triples[:, 2].T))
     g.edata['rel'] = torch.tensor(triples[:, 1].T)
     return g
+
 
 def get_g_bidir(triples, args):
     g = dgl.graph((torch.cat([triples[:, 0].T, triples[:, 2].T]),
@@ -69,23 +69,6 @@ def get_indtest_test_dataset_and_train_g(args):
     return test_dataset, g
 
 
-def get_pretrain_train_valid_dataset_and_g(args):
-    data = pickle.load(open(args.data_path, 'rb'))['train_graph']
-    num_ent = len(np.unique(np.array(data['train'])[:, [0, 2]]))
-
-    hr2t, rt2h = get_hr2t_rt2h(data['train'])
-
-    from datasets import KGETrainDataset, KGEEvalDataset
-    train_dataset = KGETrainDataset(args, data['train'],
-                                    num_ent, args.pretrain_num_neg, hr2t, rt2h)
-
-    valid_dataset = KGEEvalDataset(args, data['valid'], num_ent, hr2t, rt2h)
-
-    g = get_g_bidir(torch.LongTensor(data['train']), args)
-
-    return train_dataset, valid_dataset, g
-
-
 def get_posttrain_train_valid_dataset(args):
     data = pickle.load(open(args.data_path, 'rb'))['ind_test_graph']
     num_ent = len(np.unique(np.array(data['train'])[:, [0, 2]]))
@@ -107,7 +90,7 @@ def get_num_rel(args):
 
     return num_rel
 
-# about lmdb
+
 def serialize(data):
     return pickle.dumps(data)
 
@@ -116,7 +99,7 @@ def deserialize(data):
     data_tuple = pickle.loads(data)
     return data_tuple
 
-# about side func of training
+
 def set_seed(seed):
     dgl.seed(seed)
     dgl.random.seed(seed)

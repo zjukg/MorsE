@@ -8,12 +8,8 @@ class EntInit(nn.Module):
         super(EntInit, self).__init__()
         self.args = args
 
-        if args.double_entity_embedding:
-            self.rel_head_emb = nn.Parameter(torch.Tensor(args.num_rel, args.emb_dim * 2))
-            self.rel_tail_emb = nn.Parameter(torch.Tensor(args.num_rel, args.emb_dim * 2))
-        else:
-            self.rel_head_emb = nn.Parameter(torch.Tensor(args.num_rel, args.emb_dim))
-            self.rel_tail_emb = nn.Parameter(torch.Tensor(args.num_rel, args.emb_dim))
+        self.rel_head_emb = nn.Parameter(torch.Tensor(args.num_rel, args.ent_dim))
+        self.rel_tail_emb = nn.Parameter(torch.Tensor(args.num_rel, args.ent_dim))
 
         nn.init.xavier_normal_(self.rel_head_emb, gain=nn.init.calculate_gain('relu'))
         nn.init.xavier_normal_(self.rel_tail_emb, gain=nn.init.calculate_gain('relu'))
@@ -21,7 +17,7 @@ class EntInit(nn.Module):
     def forward(self, g_bidir):
         num_edge = g_bidir.num_edges()
         etypes = g_bidir.edata['type']
-        g_bidir.edata['ent_e'] = torch.zeros(num_edge, self.args.emb_dim).to(self.args.gpu)
+        g_bidir.edata['ent_e'] = torch.zeros(num_edge, self.args.ent_dim).to(self.args.gpu)
         rh_idx = etypes < self.args.num_rel
         rt_idx = etypes >= self.args.num_rel
         g_bidir.edata['ent_e'][rh_idx] = self.rel_head_emb[etypes[rh_idx]]
