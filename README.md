@@ -2,6 +2,8 @@
 
 This repository contains the experimental code for our SIGIR 2022 paper: [Meta-Knowledge Transfer for Inductive Knowledge Graph Embedding](https://arxiv.org/abs/2110.14170). In this paper, to achieve inductive knowledge graph embedding, we propose a model **MorsE**, which does not learn embeddings for entities but learns transferable **meta-knowledge** that can be used to produce entity embeddings. Such meta-knowledge is modeled by entity-independent modules and learned by meta-learning.
 
+![](./fig/method.png)
+
 ## Requirements
 
 We run our code mainly based on ```PyTorch 1.7.1``` and ```DGL 0.6.1``` with CUDA. You can install cooresponding version based on your GPU resources. Furthermore, we also need ```lmdb``` to store the sampled sub-KGs for meta-training and ```argparse``` to parse command lines.
