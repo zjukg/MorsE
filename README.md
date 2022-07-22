@@ -36,10 +36,17 @@ We make some important args as variables in these scripts, and you can try diffe
 If you use or extend our work, please cite the following paper:
 
 ```
-@article{MorsE,
-  title={Meta-Knowledge Transfer for Inductive Knowledge Graph Embedding},
-  author={Chen, Mingyang and Zhang, Wen and Zhu, Yushan and Zhou, Hongting and Yuan, Zonggang and Xu, Changliang and Chen, Huajun},
-  journal={arXiv preprint arXiv:2110.14170},
-  year={2022}
+@inproceedings{MorsE,
+author = {Chen, Mingyang and Zhang, Wen and Zhu, Yushan and Zhou, Hongting and Yuan, Zonggang and Xu, Changliang and Chen, Huajun},
+title = {Meta-Knowledge Transfer for Inductive Knowledge Graph Embedding},
+year = {2022},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/3477495.3531757},
+booktitle = {Proceedings of the 45th International ACM SIGIR Conference on Research and Development in Information Retrieval},
+pages = {927–937},
+numpages = {11},
+location = {Madrid, Spain},
+series = {SIGIR '22}
 }
 ```
